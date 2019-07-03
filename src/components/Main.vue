@@ -65,7 +65,10 @@ var web3 = require('web3');
 
 export default {
   name: "Main",
-
+    beforeCreate () {
+        // console.log('registerWeb3 Action dispatched from RollupNC.vue')
+        this.$store.dispatch('registerWeb3')
+    },
   data() {
     return {
       pendingRead: false,
