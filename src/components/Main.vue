@@ -1,11 +1,11 @@
 <template>
 
   <div>
-      <br/>
-    <Metamask/><br/>
-      <br/>
-      <h4>read a contract from Ethereum mainnet and redeploy it on another chain</h4>
       <br/><br/>
+      <h4>1. read a contract from Ethereum mainnet</h4><br/>
+      <h4>2. redeploy it on another chain⠀⠀⠀⠀⠀⠀⠀</h4>
+      <br/><br/>
+    <Metamask/><br/>
     <br />
     <b-container fluid>
       <b-row class="text-left">
@@ -49,13 +49,15 @@
     </b-container>
     <img class="center" v-if="pendingRead" height="120px" id="loader" src="https://loading.io/spinners/lava-lamp/index.lava-lamp-preloader.gif">
     <div v-if="readEvent" align="left" style="margin: 15px 10px 15px 100px;">
-      successfully read {{ this.name }} contract at address <a :href="'https://etherscan.io/address/' + this.address" target="blank"> {{ this.address }} </a>
+      successfully read {{ this.name }} contract at <a :href="'https://etherscan.io/address/' + this.address" target="blank"> {{ this.address }} </a>
       <br /> bytecode: <br/>
       <pre> {{ bytecode }}</pre>
       <br />(decoded with eveem.org) <br/><br/>
       <pre>{{ json | pretty }}</pre>
     </div>
+    <br/><br/>
   </div>
+
 </template>
 
 <script>
@@ -65,10 +67,20 @@ var web3 = require('web3');
 
 export default {
   name: "Main",
-    beforeCreate () {
-        // console.log('registerWeb3 Action dispatched from RollupNC.vue')
-        this.$store.dispatch('registerWeb3')
+  beforeCreate () {
+      // console.log('registerWeb3 Action dispatched from RollupNC.vue')
+      this.$store.dispatch('registerWeb3')
+  },
+  
+  computed: {
+    web3() {
+      return this.$store.state.web3;
     },
+    chain() {
+      return this.$store.state.chainId;
+    }
+  },
+  
   data() {
     return {
       pendingRead: false,
@@ -78,8 +90,8 @@ export default {
       json: null,
       bytecode: null,
       web3provider: "https://mainnet.infura.io/v3/73c7b6df9ad24664bb7cfdfafbec3c3d",  
-      chainId: 6,
-      chain: "kotti"
+      chainId: this.$store.state.web3.networkId,
+      chain: this.$store.state.chainId[this.$store.state.web3.networkId]
     };
   },
 
@@ -115,12 +127,7 @@ export default {
     },
 
     getChain(id){
-        if (id == 1){
-            this.chain = "mainnet"
-        }
-        if (id == 6){
-            this.chain = "kotti"
-        }
+      this.chain = this.$store.state.chainId[id]
     }
 
   },
@@ -144,7 +151,7 @@ export default {
 <style scoped>
 
   pre {
-    max-height: 200px;
+    max-height: 300px;
     white-space: pre-wrap;       /* Since CSS 2.1 */
     white-space: -moz-pre-wrap !important;
     white-space: -pre-wrap;
